@@ -36,10 +36,10 @@ def readMsg():
         line = sys.stdin.readline()
         if not line:
             raise Exception('Read EOF from stdin')
-        if line[0:-1] == "end":
+        if line[:-1] == "end":
             break
         msg = msg + line
-    return json_decode(msg[0:-1])
+    return json_decode(msg[:-1])
 
 MODE = None
 ANCHOR_TUPLE = None
@@ -50,12 +50,11 @@ pending_commands = deque()
 def readTaskIds():
     if pending_taskids:
         return pending_taskids.popleft()
-    else:
+    msg = readMsg()
+    while type(msg) is not list:
+        pending_commands.append(msg)
         msg = readMsg()
-        while type(msg) is not list:
-            pending_commands.append(msg)
-            msg = readMsg()
-        return msg
+    return msg
 
 #queue up taskids we read while trying to read commands/tuples
 pending_taskids = deque()
@@ -63,12 +62,11 @@ pending_taskids = deque()
 def readCommand():
     if pending_commands:
         return pending_commands.popleft()
-    else:
+    msg = readMsg()
+    while type(msg) is list:
+        pending_taskids.append(msg)
         msg = readMsg()
-        while type(msg) is list:
-            pending_taskids.append(msg)
-            msg = readMsg()
-        return msg
+    return msg
 
 def readTuple():
     cmd = readCommand()
@@ -85,7 +83,7 @@ def sync():
 def sendpid(heartbeatdir):
     pid = os.getpid()
     sendMsgToParent({'pid':pid})
-    open(heartbeatdir + "/" + str(pid), "w").close()
+    open(f"{heartbeatdir}/{str(pid)}", "w").close()
 
 def emit(*args, **kwargs):
     __emit(*args, **kwargs)
@@ -170,9 +168,7 @@ class Tuple(object):
         self.values = values
 
     def __repr__(self):
-        return '<%s%s>' % (
-            self.__class__.__name__,
-            ''.join(' %s=%r' % (k, self.__dict__[k]) for k in sorted(self.__dict__.keys())))
+        return f"<{self.__class__.__name__}{''.join((' %s=%r' % (k, self.__dict__[k]) for k in sorted(self.__dict__.keys())))}>"
 
     def is_heartbeat_tuple(self):
         return self.task == -1 and self.stream == "__heartbeat"

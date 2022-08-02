@@ -75,15 +75,15 @@ class Client(Iface):
 class Processor(Iface, TProcessor):
   def __init__(self, handler):
     self._handler = handler
-    self._processMap = {}
-    self._processMap["execute"] = Processor.process_execute
+    self._processMap = {"execute": Processor.process_execute}
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
     if name not in self._processMap:
       iprot.skip(TType.STRUCT)
       iprot.readMessageEnd()
-      x = TApplicationException(TApplicationException.UNKNOWN_METHOD, 'Unknown function %s' % (name))
+      x = TApplicationException(TApplicationException.UNKNOWN_METHOD,
+                                f'Unknown function {name}')
       oprot.writeMessageBegin(name, TMessageType.EXCEPTION, seqid)
       x.write(oprot)
       oprot.writeMessageEnd()
@@ -138,18 +138,12 @@ class execute_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.functionName = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.funcArgs = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.STRING:
+        self.functionName = iprot.readString().decode('utf-8')
+      elif fid == 1 or fid == 2 and ftype != TType.STRING or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.funcArgs = iprot.readString().decode('utf-8')
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -182,7 +176,7 @@ class execute_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -274,7 +268,7 @@ class execute_result:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__

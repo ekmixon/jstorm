@@ -613,31 +613,33 @@ class Client(Iface):
 class Processor(Iface, TProcessor):
   def __init__(self, handler):
     self._handler = handler
-    self._processMap = {}
-    self._processMap["info"] = Processor.process_info
-    self._processMap["stopAppMaster"] = Processor.process_stopAppMaster
-    self._processMap["startNimbus"] = Processor.process_startNimbus
-    self._processMap["stopNimbus"] = Processor.process_stopNimbus
-    self._processMap["removeNimbus"] = Processor.process_removeNimbus
-    self._processMap["removeSpecNimbus"] = Processor.process_removeSpecNimbus
-    self._processMap["addSupervisors"] = Processor.process_addSupervisors
-    self._processMap["addSpecSupervisor"] = Processor.process_addSpecSupervisor
-    self._processMap["startSpecNimbus"] = Processor.process_startSpecNimbus
-    self._processMap["startSupervisors"] = Processor.process_startSupervisors
-    self._processMap["stopSupervisors"] = Processor.process_stopSupervisors
-    self._processMap["removeSupervisors"] = Processor.process_removeSupervisors
-    self._processMap["removeSpecSupervisors"] = Processor.process_removeSpecSupervisors
-    self._processMap["upgradeCluster"] = Processor.process_upgradeCluster
-    self._processMap["shutdown"] = Processor.process_shutdown
-    self._processMap["getConfig"] = Processor.process_getConfig
-    self._processMap["setConfig"] = Processor.process_setConfig
+    self._processMap = {
+        "info": Processor.process_info,
+        "stopAppMaster": Processor.process_stopAppMaster,
+        "startNimbus": Processor.process_startNimbus,
+        "stopNimbus": Processor.process_stopNimbus,
+        "removeNimbus": Processor.process_removeNimbus,
+        "removeSpecNimbus": Processor.process_removeSpecNimbus,
+        "addSupervisors": Processor.process_addSupervisors,
+        "addSpecSupervisor": Processor.process_addSpecSupervisor,
+        "startSpecNimbus": Processor.process_startSpecNimbus,
+        "startSupervisors": Processor.process_startSupervisors,
+        "stopSupervisors": Processor.process_stopSupervisors,
+        "removeSupervisors": Processor.process_removeSupervisors,
+        "removeSpecSupervisors": Processor.process_removeSpecSupervisors,
+        "upgradeCluster": Processor.process_upgradeCluster,
+        "shutdown": Processor.process_shutdown,
+        "getConfig": Processor.process_getConfig,
+        "setConfig": Processor.process_setConfig,
+    }
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
     if name not in self._processMap:
       iprot.skip(TType.STRUCT)
       iprot.readMessageEnd()
-      x = TApplicationException(TApplicationException.UNKNOWN_METHOD, 'Unknown function %s' % (name))
+      x = TApplicationException(TApplicationException.UNKNOWN_METHOD,
+                                f'Unknown function {name}')
       oprot.writeMessageBegin(name, TMessageType.EXCEPTION, seqid)
       x.write(oprot)
       oprot.writeMessageEnd()
@@ -869,13 +871,12 @@ class info_args:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -905,11 +906,8 @@ class info_result:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 0:
-        if ftype == TType.STRING:
-          self.success = iprot.readString();
-        else:
-          iprot.skip(ftype)
+      if fid == 0 and ftype == TType.STRING:
+        self.success = iprot.readString();
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -939,7 +937,7 @@ class info_result:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -979,13 +977,12 @@ class stopAppMaster_args:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1025,13 +1022,12 @@ class stopAppMaster_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1122,7 +1118,7 @@ class startNimbus_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1162,13 +1158,12 @@ class startNimbus_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1208,13 +1203,12 @@ class stopNimbus_args:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1254,13 +1248,12 @@ class stopNimbus_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1291,11 +1284,8 @@ class removeNimbus_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.I32:
-          self.number = iprot.readI32();
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.I32:
+        self.number = iprot.readI32();
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1325,7 +1315,7 @@ class removeNimbus_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1365,13 +1355,12 @@ class removeNimbus_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1402,11 +1391,8 @@ class removeSpecNimbus_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.container_id = iprot.readString();
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRING:
+        self.container_id = iprot.readString();
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1436,7 +1422,7 @@ class removeSpecNimbus_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1476,13 +1462,12 @@ class removeSpecNimbus_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1573,7 +1558,7 @@ class addSupervisors_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1613,13 +1598,12 @@ class addSupervisors_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1752,7 +1736,7 @@ class addSpecSupervisor_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1792,13 +1776,12 @@ class addSpecSupervisor_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1931,7 +1914,7 @@ class startSpecNimbus_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1971,13 +1954,12 @@ class startSpecNimbus_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2017,13 +1999,12 @@ class startSupervisors_args:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2063,13 +2044,12 @@ class startSupervisors_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2109,13 +2089,12 @@ class stopSupervisors_args:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2155,13 +2134,12 @@ class stopSupervisors_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2192,11 +2170,8 @@ class removeSupervisors_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.I32:
-          self.number = iprot.readI32();
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.I32:
+        self.number = iprot.readI32();
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -2226,7 +2201,7 @@ class removeSupervisors_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2266,13 +2241,12 @@ class removeSupervisors_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2303,11 +2277,8 @@ class removeSpecSupervisors_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.container_id = iprot.readString();
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRING:
+        self.container_id = iprot.readString();
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -2337,7 +2308,7 @@ class removeSpecSupervisors_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2377,13 +2348,12 @@ class removeSpecSupervisors_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2423,13 +2393,12 @@ class upgradeCluster_args:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2469,13 +2438,12 @@ class upgradeCluster_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2515,13 +2483,12 @@ class shutdown_args:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2561,13 +2528,12 @@ class shutdown_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2607,13 +2573,12 @@ class getConfig_args:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2643,11 +2608,8 @@ class getConfig_result:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 0:
-        if ftype == TType.STRING:
-          self.success = iprot.readString();
-        else:
-          iprot.skip(ftype)
+      if fid == 0 and ftype == TType.STRING:
+        self.success = iprot.readString();
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -2677,7 +2639,7 @@ class getConfig_result:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2711,18 +2673,12 @@ class setConfig_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.key = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.value = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.STRING:
+        self.key = iprot.readString();
+      elif fid == 1 or fid == 2 and ftype != TType.STRING or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.value = iprot.readString();
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -2755,7 +2711,7 @@ class setConfig_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2795,13 +2751,12 @@ class setConfig_result:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__

@@ -42,16 +42,12 @@ def cygpath(x):
     lines = output.split("\n")
     return lines[0]
 
-if sys.platform == "cygwin":
-    normclasspath = cygpath
-else:
-    normclasspath = identity
-
+normclasspath = cygpath if sys.platform == "cygwin" else identity
 CLIENT_CONF_FILE = ""
 JSTORM_DIR = "/".join(os.path.realpath( __file__ ).split("/")[:-2])
-JSTORM_CONF_DIR = os.getenv("JSTORM_CONF_DIR", JSTORM_DIR + "/conf" )
+JSTORM_CONF_DIR = os.getenv("JSTORM_CONF_DIR", f"{JSTORM_DIR}/conf")
 STORM_YAML = os.path.join(JSTORM_CONF_DIR, 'storm.yaml')
-LOGBACK_CONF = JSTORM_CONF_DIR + "/jstorm.logback.xml"
+LOGBACK_CONF = f"{JSTORM_CONF_DIR}/jstorm.logback.xml"
 CONFIG_OPTS = []
 EXCLUDE_JARS = []
 INCLUDE_JARS = []
@@ -67,7 +63,7 @@ if os.path.exists(STORM_YAML):
                 if kv[1] == 'null':
                     kv[1] = None
                 elif kv[1].startswith('"') and kv[1].endswith('"'):
-                    kv[1] = kv[1][1:len(kv[1])-1]
+                    kv[1] = kv[1][1:-1]
                 STORM_YAML_CONFIG[kv[0].strip()] = kv[1]
 
 
@@ -96,26 +92,29 @@ def get_config_opts():
     return "-Dstorm.options=" + ','.join(map(quote_plus,CONFIG_OPTS))
 
 def get_client_log_opts():
-    ret = (" -Dstorm.root.logger=INFO,stdout -Dlogback.configurationFile=" + JSTORM_DIR +
-           "/conf/client_logback.xml -Dlog4j.configuration=File:" + JSTORM_DIR + 
-           "/conf/client_log4j.properties")
+    ret = (
+        (
+            f" -Dstorm.root.logger=INFO,stdout -Dlogback.configurationFile={JSTORM_DIR}"
+            + "/conf/client_logback.xml -Dlog4j.configuration=File:"
+        )
+        + JSTORM_DIR
+    ) + "/conf/client_log4j.properties"
+
     if CLIENT_CONF_FILE != "":
-        ret += (" -Dstorm.conf.file=" + CLIENT_CONF_FILE)
+        ret += f" -Dstorm.conf.file={CLIENT_CONF_FILE}"
     return ret
 
 def get_server_log_opts(module):
     jstorm_log_dir = get_log_dir()
 
-    key = module + '.deamon.logview.port'
+    key = f'{module}.deamon.logview.port'
     is_yarn = STORM_YAML_CONFIG.has_key('jstorm.on.yarn') and (STORM_YAML_CONFIG['jstorm.on.yarn'].lower() == 'true')
     if is_yarn and STORM_YAML_CONFIG.has_key(key):
-        filename = module + '-' + STORM_YAML_CONFIG[key] + '.log'
+        filename = f'{module}-{STORM_YAML_CONFIG[key]}.log'
     else:
-        filename = module + '.log'
-    gc_log_path = jstorm_log_dir + "/" + module + "-gc-" + str(int(time.time())) + ".log"
-    ret = (" -Xloggc:%s -Dlogfile.name=%s -Dlogback.configurationFile=%s -Djstorm.log.dir=%s "
-           %(gc_log_path, filename, LOGBACK_CONF, jstorm_log_dir))
-    return ret
+        filename = f'{module}.log'
+    gc_log_path = f"{jstorm_log_dir}/{module}-gc-{int(time.time())}.log"
+    return f" -Xloggc:{gc_log_path} -Dlogfile.name={filename} -Dlogback.configurationFile={LOGBACK_CONF} -Djstorm.log.dir={jstorm_log_dir} "
 
 if not os.path.exists(JSTORM_DIR + "/RELEASE"):
     print "******************************************"
@@ -147,12 +146,12 @@ def get_classpath(extrajars):
     ret = []
     ret.extend(extrajars)
     ret.extend(get_jars_full(JSTORM_DIR))
-    ret.extend(get_jars_full(JSTORM_DIR + "/lib"))
+    ret.extend(get_jars_full(f"{JSTORM_DIR}/lib"))
     ret.extend(INCLUDE_JARS)
     return normclasspath(":".join(ret))
     
 def get_external_classpath(external):
-    return map(lambda x:JSTORM_DIR + "/lib/ext/" + x + "/*", external.split(","))
+    return map(lambda x: f"{JSTORM_DIR}/lib/ext/{x}/*", external.split(","))
 
 def confvalue(name, extrapaths):
     command = [
@@ -181,13 +180,10 @@ def print_localconfvalue(name):
 def get_log_dir():
     cppaths = [JSTORM_CONF_DIR]
     jstorm_log_dir = confvalue("jstorm.log.dir", cppaths)
-    if not jstorm_log_dir == "null":
-       if not os.path.exists(jstorm_log_dir):
-           os.makedirs(jstorm_log_dir)
-    else:
-       jstorm_log_dir = JSTORM_DIR + "/logs"
-       if not os.path.exists(jstorm_log_dir):
-           os.makedirs(jstorm_log_dir)
+    if jstorm_log_dir == "null":
+        jstorm_log_dir = f"{JSTORM_DIR}/logs"
+    if not os.path.exists(jstorm_log_dir):
+        os.makedirs(jstorm_log_dir)
     return jstorm_log_dir
 
 def print_remoteconfvalue(name):
@@ -206,10 +202,32 @@ def exec_storm_class(klass, jvmtype="-client -Xms256m -Xmx256m", childopts="", e
     nativepath = confvalue("java.library.path", extrajars)
     #args_str = " ".join(map(lambda s: "\"" + s + "\"", args))
     args_str = " ".join(args)
-    print args_str
-    command = "java " + jvmtype + " -Djstorm.home=" + JSTORM_DIR + " " + get_config_opts() + " -Djava.library.path=" \
-              + nativepath + " " + childopts + " -cp " + get_classpath(extrajars) + " " + klass + " " + args_str
-    print "Running: " + command
+    nativepath = confvalue("java.library.path", extrajars)
+    command = (
+        (
+            (
+                (
+                    (
+                        (
+                            (
+                                f"java {jvmtype} -Djstorm.home={JSTORM_DIR} {get_config_opts()} -Djava.library.path="
+                                + nativepath
+                            )
+                            + " "
+                        )
+                        + childopts
+                    )
+                    + " -cp "
+                )
+                + get_classpath(extrajars)
+                + " "
+            )
+            + klass
+        )
+        + " "
+    ) + args_str
+
+    nativepath = confvalue("java.library.path", extrajars)
     global STATUS
     STATUS = os.execvp("java", filter_array(command.split(" ")))
     #STATUS = os.system(command)
@@ -223,12 +241,18 @@ def jar(jarfile, klass, *args):
     (https://github.com/alibaba/jstorm/wiki/JStorm-Chinese-Documentation)
     will upload the jar at topology-jar-path when the topology is submitted.
     """
-    childopts = "-Dstorm.jar=" + jarfile + get_client_log_opts() + get_exclude_jars()
+    childopts = f"-Dstorm.jar={jarfile}{get_client_log_opts()}{get_exclude_jars()}"
     exec_storm_class(
         klass,
-        extrajars=[jarfile, JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
+        extrajars=[
+            jarfile,
+            JSTORM_CONF_DIR,
+            f"{JSTORM_DIR}/bin",
+            CLIENT_CONF_FILE,
+        ],
         args=args,
-        childopts=childopts)
+        childopts=childopts,
+    )
 
 def zktool(*args):
     """Syntax: [jstorm jar topology-jar-path class ...]
@@ -260,8 +284,9 @@ def kill(*args):
     exec_storm_class(
         "backtype.storm.command.kill_topology",
         args=args,
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def activate(*args):
     """Syntax: [jstorm activate topology-name]
@@ -272,8 +297,9 @@ def activate(*args):
     exec_storm_class(
         "backtype.storm.command.activate",
         args=args,
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def deactivate(*args):
     """Syntax: [jstorm deactivate topology-name]
@@ -284,8 +310,9 @@ def deactivate(*args):
     exec_storm_class(
         "backtype.storm.command.deactivate",
         args=args,
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def rebalance(*args):
     """Syntax: [jstorm rebalance topology-name [-w wait-time-secs]]
@@ -308,8 +335,9 @@ def rebalance(*args):
     exec_storm_class(
         "backtype.storm.command.rebalance",
         args=args,
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def restart(*args):
     """Syntax: [jstorm restart topology-name [conf]]
@@ -318,8 +346,9 @@ def restart(*args):
     exec_storm_class(
         "backtype.storm.command.restart",
         args=args,
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def update_topology(*args):
     """Syntax: [jstorm update_topology topology-name -jar [jarpath] -conf [confpath]]
@@ -328,8 +357,9 @@ def update_topology(*args):
     exec_storm_class(
         "backtype.storm.command.update_topology",
         args=args,
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def gray_upgrade(*args):
     """Syntax: [jstorm gray_upgrade topology-name -jar [jarpath] -conf [confpath] -worker [workerNum]
@@ -339,8 +369,9 @@ def gray_upgrade(*args):
     exec_storm_class(
         "backtype.storm.command.gray_upgrade",
         args=args,
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def rollback(*args):
     """Syntax: [jstorm rollback topology-name]"""
@@ -348,8 +379,9 @@ def rollback(*args):
     exec_storm_class(
         "backtype.storm.command.rollback_topology",
         args=args,
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def complete_upgrade(*args):
     """Syntax: [jstorm complete_upgrade topology-name]"""
@@ -357,8 +389,9 @@ def complete_upgrade(*args):
     exec_storm_class(
         "backtype.storm.command.complete_upgrade",
         args=args,
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def nimbus():
     """Syntax: [jstorm nimbus]
@@ -452,10 +485,11 @@ def metrics_monitor(*args):
     """
     childopts = get_client_log_opts()
     exec_storm_class(
-        "backtype.storm.command.metrics_monitor", 
-        args=args, 
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        "backtype.storm.command.metrics_monitor",
+        args=args,
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def list(*args):
     """Syntax: [jstorm list]
@@ -464,10 +498,11 @@ def list(*args):
     """
     childopts = get_client_log_opts()
     exec_storm_class(
-        "backtype.storm.command.list", 
-        args=args, 
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        "backtype.storm.command.list",
+        args=args,
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def blobstore(*args):
     """Syntax: [jstorm blobstore -m]
@@ -479,8 +514,9 @@ def blobstore(*args):
         "backtype.storm.command.blobstore",
         args=args,
         jvmtype="-client -Xms256m -Xmx256m",
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 def blacklist(*args):
     """Syntax: [jstorm blacklist add|remove hostname]
@@ -492,8 +528,9 @@ def blacklist(*args):
         "backtype.storm.command.blacklist",
         args=args,
         jvmtype="-client -Xms256m -Xmx256m",
-        extrajars=[JSTORM_CONF_DIR, JSTORM_DIR + "/bin", CLIENT_CONF_FILE],
-        childopts=childopts)
+        extrajars=[JSTORM_CONF_DIR, f"{JSTORM_DIR}/bin", CLIENT_CONF_FILE],
+        childopts=childopts,
+    )
 
 COMMANDS = {"jar": jar, "kill": kill, "nimbus": nimbus, "zktool": zktool,
             "drpc": drpc, "supervisor": supervisor, "localconfvalue": print_localconfvalue,
@@ -526,7 +563,7 @@ def parse_config_opts(args):
   curr.reverse()
   config_list = []
   args_list = []
-  
+
   while len(curr) > 0:
     token = curr.pop()
     if token == "-c":
@@ -540,7 +577,7 @@ def parse_config_opts(args):
       parse_include_jars(curr.pop())
     else:
       args_list.append(token)
-  
+
   return config_list, args_list
     
 def main():

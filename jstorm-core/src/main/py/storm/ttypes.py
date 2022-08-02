@@ -153,7 +153,7 @@ class JavaObjectArg:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -187,24 +187,18 @@ class JavaObject:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.full_class_name = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.LIST:
-          self.args_list = []
-          (_etype3, _size0) = iprot.readListBegin()
-          for _i4 in xrange(_size0):
-            _elem5 = JavaObjectArg()
-            _elem5.read(iprot)
-            self.args_list.append(_elem5)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.STRING:
+        self.full_class_name = iprot.readString().decode('utf-8')
+      elif fid == 1 or fid == 2 and ftype != TType.LIST or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.args_list = []
+        (_etype3, _size0) = iprot.readListBegin()
+        for _i4 in xrange(_size0):
+          _elem5 = JavaObjectArg()
+          _elem5.read(iprot)
+          self.args_list.append(_elem5)
+        iprot.readListEnd()
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -244,7 +238,7 @@ class JavaObject:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -284,13 +278,12 @@ class NullStruct:
 
 
   def __hash__(self):
-    value = 17
-    return value
+    return 17
 
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -324,18 +317,12 @@ class GlobalStreamId:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.componentId = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.streamId = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.STRING:
+        self.componentId = iprot.readString().decode('utf-8')
+      elif fid == 1 or fid == 2 and ftype != TType.STRING or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.streamId = iprot.readString().decode('utf-8')
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -372,7 +359,7 @@ class GlobalStreamId:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -556,7 +543,7 @@ class Grouping:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -590,23 +577,17 @@ class StreamInfo:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.LIST:
-          self.output_fields = []
-          (_etype17, _size14) = iprot.readListBegin()
-          for _i18 in xrange(_size14):
-            _elem19 = iprot.readString().decode('utf-8')
-            self.output_fields.append(_elem19)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.BOOL:
-          self.direct = iprot.readBool();
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.LIST:
+        self.output_fields = []
+        (_etype17, _size14) = iprot.readListBegin()
+        for _i18 in xrange(_size14):
+          _elem19 = iprot.readString().decode('utf-8')
+          self.output_fields.append(_elem19)
+        iprot.readListEnd()
+      elif fid == 1 or fid == 2 and ftype != TType.BOOL or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.direct = iprot.readBool();
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -646,7 +627,7 @@ class StreamInfo:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -680,18 +661,12 @@ class ShellComponent:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.execution_command = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.script = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.STRING:
+        self.execution_command = iprot.readString().decode('utf-8')
+      elif fid == 1 or fid == 2 and ftype != TType.STRING or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.script = iprot.readString().decode('utf-8')
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -724,7 +699,7 @@ class ShellComponent:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -817,7 +792,7 @@ class ComponentObject:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -948,7 +923,7 @@ class ComponentCommon:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -982,20 +957,14 @@ class SpoutSpec:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.spout_object = ComponentObject()
-          self.spout_object.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.common = ComponentCommon()
-          self.common.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.STRUCT:
+        self.spout_object = ComponentObject()
+        self.spout_object.read(iprot)
+      elif fid == 1 or fid == 2 and ftype != TType.STRUCT or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.common = ComponentCommon()
+        self.common.read(iprot)
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -1032,7 +1001,7 @@ class SpoutSpec:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1066,20 +1035,14 @@ class Bolt:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.bolt_object = ComponentObject()
-          self.bolt_object.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.common = ComponentCommon()
-          self.common.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.STRUCT:
+        self.bolt_object = ComponentObject()
+        self.bolt_object.read(iprot)
+      elif fid == 1 or fid == 2 and ftype != TType.STRUCT or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.common = ComponentCommon()
+        self.common.read(iprot)
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -1116,7 +1079,7 @@ class Bolt:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1150,20 +1113,14 @@ class StateSpoutSpec:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.state_spout_object = ComponentObject()
-          self.state_spout_object.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.common = ComponentCommon()
-          self.common.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.STRUCT:
+        self.state_spout_object = ComponentObject()
+        self.state_spout_object.read(iprot)
+      elif fid == 1 or fid == 2 and ftype != TType.STRUCT or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.common = ComponentCommon()
+        self.common.read(iprot)
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -1200,7 +1157,7 @@ class StateSpoutSpec:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1330,7 +1287,7 @@ class StormTopology:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1361,11 +1318,8 @@ class AlreadyAliveException(TException):
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.msg = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRING:
+        self.msg = iprot.readString().decode('utf-8')
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1400,7 +1354,7 @@ class AlreadyAliveException(TException):
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1431,11 +1385,8 @@ class NotAliveException(TException):
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.msg = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRING:
+        self.msg = iprot.readString().decode('utf-8')
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1470,7 +1421,7 @@ class NotAliveException(TException):
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1501,11 +1452,8 @@ class AuthorizationException(TException):
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.msg = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRING:
+        self.msg = iprot.readString().decode('utf-8')
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1540,7 +1488,7 @@ class AuthorizationException(TException):
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1571,11 +1519,8 @@ class InvalidTopologyException(TException):
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.msg = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRING:
+        self.msg = iprot.readString().decode('utf-8')
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1610,7 +1555,7 @@ class InvalidTopologyException(TException):
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1641,11 +1586,8 @@ class TopologyAssignException(TException):
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.msg = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRING:
+        self.msg = iprot.readString().decode('utf-8')
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1680,7 +1622,7 @@ class TopologyAssignException(TException):
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1711,11 +1653,8 @@ class KeyNotFoundException(TException):
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.msg = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRING:
+        self.msg = iprot.readString().decode('utf-8')
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1750,7 +1689,7 @@ class KeyNotFoundException(TException):
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1781,11 +1720,8 @@ class KeyAlreadyExistsException(TException):
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.msg = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRING:
+        self.msg = iprot.readString().decode('utf-8')
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1820,7 +1756,7 @@ class KeyAlreadyExistsException(TException):
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -1975,7 +1911,7 @@ class TopologySummary:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2154,7 +2090,7 @@ class SupervisorSummary:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2188,18 +2124,12 @@ class NimbusStat:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.host = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.uptimeSecs = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.STRING:
+        self.host = iprot.readString().decode('utf-8')
+      elif fid == 1 or fid == 2 and ftype != TType.STRING or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.uptimeSecs = iprot.readString().decode('utf-8')
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -2236,7 +2166,7 @@ class NimbusStat:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2403,7 +2333,7 @@ class NimbusSummary:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2519,7 +2449,7 @@ class ClusterSummary:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2553,18 +2483,12 @@ class TaskComponent:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.I32:
-          self.taskId = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.component = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.I32:
+        self.taskId = iprot.readI32();
+      elif fid == 1 or fid == 2 and ftype != TType.STRING or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.component = iprot.readString().decode('utf-8')
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -2601,7 +2525,7 @@ class TaskComponent:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2722,7 +2646,7 @@ class WorkerSummary:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -2753,17 +2677,14 @@ class MetricWindow:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.MAP:
-          self.metricWindow = {}
-          (_ktype95, _vtype96, _size94 ) = iprot.readMapBegin()
-          for _i98 in xrange(_size94):
-            _key99 = iprot.readI32();
-            _val100 = iprot.readDouble();
-            self.metricWindow[_key99] = _val100
-          iprot.readMapEnd()
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.MAP:
+        self.metricWindow = {}
+        (_ktype95, _vtype96, _size94 ) = iprot.readMapBegin()
+        for _i98 in xrange(_size94):
+          _key99 = iprot.readI32();
+          _val100 = iprot.readDouble();
+          self.metricWindow[_key99] = _val100
+        iprot.readMapEnd()
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -2799,7 +2720,7 @@ class MetricWindow:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -3117,7 +3038,7 @@ class MetricSnapshot:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -3148,24 +3069,21 @@ class MetricInfo:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.MAP:
-          self.metrics = {}
-          (_ktype104, _vtype105, _size103 ) = iprot.readMapBegin()
-          for _i107 in xrange(_size103):
-            _key108 = iprot.readString().decode('utf-8')
-            _val109 = {}
-            (_ktype111, _vtype112, _size110 ) = iprot.readMapBegin()
-            for _i114 in xrange(_size110):
-              _key115 = iprot.readI32();
-              _val116 = MetricSnapshot()
-              _val116.read(iprot)
-              _val109[_key115] = _val116
-            iprot.readMapEnd()
-            self.metrics[_key108] = _val109
+      if fid == 1 and ftype == TType.MAP:
+        self.metrics = {}
+        (_ktype104, _vtype105, _size103 ) = iprot.readMapBegin()
+        for _i107 in xrange(_size103):
+          _key108 = iprot.readString().decode('utf-8')
+          _val109 = {}
+          (_ktype111, _vtype112, _size110 ) = iprot.readMapBegin()
+          for _i114 in xrange(_size110):
+            _key115 = iprot.readI32();
+            _val116 = MetricSnapshot()
+            _val116.read(iprot)
+            _val109[_key115] = _val116
           iprot.readMapEnd()
-        else:
-          iprot.skip(ftype)
+          self.metrics[_key108] = _val109
+        iprot.readMapEnd()
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -3203,7 +3121,7 @@ class MetricInfo:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -3321,7 +3239,7 @@ class SupervisorWorkers:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -3433,7 +3351,7 @@ class ErrorInfo:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -3575,7 +3493,7 @@ class ComponentSummary:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -3724,7 +3642,7 @@ class TaskSummary:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -3886,7 +3804,7 @@ class TopologyMetric:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -4018,7 +3936,7 @@ class TopologyInfo:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -4131,7 +4049,7 @@ class WorkerUploadMetrics:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -4162,11 +4080,8 @@ class KillOptions:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.I32:
-          self.wait_secs = iprot.readI32();
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.I32:
+        self.wait_secs = iprot.readI32();
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -4196,7 +4111,7 @@ class KillOptions:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -4287,7 +4202,7 @@ class RebalanceOptions:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__

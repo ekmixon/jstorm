@@ -149,17 +149,19 @@ class Client(Iface):
 class Processor(Iface, TProcessor):
   def __init__(self, handler):
     self._handler = handler
-    self._processMap = {}
-    self._processMap["result"] = Processor.process_result
-    self._processMap["fetchRequest"] = Processor.process_fetchRequest
-    self._processMap["failRequest"] = Processor.process_failRequest
+    self._processMap = {
+        "result": Processor.process_result,
+        "fetchRequest": Processor.process_fetchRequest,
+        "failRequest": Processor.process_failRequest,
+    }
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
     if name not in self._processMap:
       iprot.skip(TType.STRUCT)
       iprot.readMessageEnd()
-      x = TApplicationException(TApplicationException.UNKNOWN_METHOD, 'Unknown function %s' % (name))
+      x = TApplicationException(TApplicationException.UNKNOWN_METHOD,
+                                f'Unknown function {name}')
       oprot.writeMessageBegin(name, TMessageType.EXCEPTION, seqid)
       x.write(oprot)
       oprot.writeMessageEnd()
@@ -240,18 +242,12 @@ class result_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.id = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.result = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 1 and ftype == TType.STRING:
+        self.id = iprot.readString().decode('utf-8')
+      elif fid == 1 or fid == 2 and ftype != TType.STRING or fid != 2:
         iprot.skip(ftype)
+      else:
+        self.result = iprot.readString().decode('utf-8')
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -284,7 +280,7 @@ class result_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -315,12 +311,9 @@ class result_result:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.aze = AuthorizationException()
-          self.aze.read(iprot)
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRUCT:
+        self.aze = AuthorizationException()
+        self.aze.read(iprot)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -350,7 +343,7 @@ class result_result:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -381,11 +374,8 @@ class fetchRequest_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.functionName = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRING:
+        self.functionName = iprot.readString().decode('utf-8')
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -415,7 +405,7 @@ class fetchRequest_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -448,20 +438,14 @@ class fetchRequest_result:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 0:
-        if ftype == TType.STRUCT:
-          self.success = DRPCRequest()
-          self.success.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.aze = AuthorizationException()
-          self.aze.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
+      if fid == 0 and ftype == TType.STRUCT:
+        self.success = DRPCRequest()
+        self.success.read(iprot)
+      elif fid == 0 or fid == 1 and ftype != TType.STRUCT or fid != 1:
         iprot.skip(ftype)
+      else:
+        self.aze = AuthorizationException()
+        self.aze.read(iprot)
       iprot.readFieldEnd()
     iprot.readStructEnd()
 
@@ -494,7 +478,7 @@ class fetchRequest_result:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -525,11 +509,8 @@ class failRequest_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.id = iprot.readString().decode('utf-8')
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRING:
+        self.id = iprot.readString().decode('utf-8')
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -559,7 +540,7 @@ class failRequest_args:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
@@ -590,12 +571,9 @@ class failRequest_result:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
-      if fid == 1:
-        if ftype == TType.STRUCT:
-          self.aze = AuthorizationException()
-          self.aze.read(iprot)
-        else:
-          iprot.skip(ftype)
+      if fid == 1 and ftype == TType.STRUCT:
+        self.aze = AuthorizationException()
+        self.aze.read(iprot)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -625,7 +603,7 @@ class failRequest_result:
   def __repr__(self):
     L = ['%s=%r' % (key, value)
       for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+    return f"{self.__class__.__name__}({', '.join(L)})"
 
   def __eq__(self, other):
     return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
